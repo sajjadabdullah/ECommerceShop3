@@ -28,7 +28,22 @@ class AdminLoginController extends Controller
                 ['email'=>$request->email, 'password'=>$request->password],
                 $request->get('remember')))
                 {
-
+                    $admin = Auth::guard('admin')->user();
+                    if ($admin->role==2)
+                    {
+                        return redirect()->route('admin.dashboard');
+                    }
+                    else
+                    {
+                        Auth::guard('admin')->logout();
+                        return redirect()->route('admin.login')
+                            ->with('error', 'Not authorized to use Admin Panel.');
+                    }
+                }
+                else
+                {
+                    return redirect()->route('admin.login')
+                    ->with('error', 'Email or Password is incorrect.');
                 }
         }
         else
@@ -42,4 +57,5 @@ class AdminLoginController extends Controller
         // $user_data=array(
         // }        
     }
+
 }
